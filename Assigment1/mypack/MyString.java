@@ -1,109 +1,146 @@
 package mypack;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
 /**
  * @filename - MyString.java
- * @description - A custom string class with various string manipulation methods.
+ * @description - A custom string class using String type (no built-in manipulation methods).
+ * All operations are manually implemented using loops and concatenation.
+ * Includes append, countWords, replace, isPalindrome, splice, split, maxRepeatingCharacter, sort, shift, reverse, and getString methods.
  * @author - Aman Jeet Singh
  */
 public class MyString {
-    private String str;
+    private String value;
 
     public MyString(String input) {
-        str = input;
+        this.value = input;
     }
 
     @Override
     public String toString() {
-        return this.str;
+        return this.value;
     }
+
 
     // Append
     public String append(String newStr) {
-        this.str += newStr;
-        return this.str;
+        this.value = this.value + newStr;
+        return this.value;
     }
+
 
     // Count words
     public int countWords() {
-        int words = 0;
+        int count = 0;
         boolean inWord = false;
-        for (char ch : str.toCharArray()) {
+        for (int i = 0; i < this.value.length(); i++) {
+            char ch = this.value.charAt(i);
             if (ch != ' ' && ch != '\t') {
                 if (!inWord) {
-                    words++;
+                    count++;
                     inWord = true;
                 }
-            } else inWord = false;
+            } else {
+                inWord = false;
+            }
         }
-        return words;
+        return count;
     }
 
-    // Replace substring (your custom logic retained but fixed)
+    // Replace all occurrences of a -> b
     public String replace(String a, String b) {
-        StringBuilder s = new StringBuilder();
+        String newStr = "";
         int i = 0;
-        while (i < str.length()) {
-            if (i + a.length() <= str.length() && str.substring(i, i + a.length()).equals(a)) {
-                s.append(b);
+        while (i < this.value.length()) {
+            boolean match = true;
+            if (i + a.length() <= this.value.length()) {
+                for (int j = 0; j < a.length(); j++) {
+                    if (this.value.charAt(i + j) != a.charAt(j)) {
+                        match = false;
+                        break;
+                    }
+                }
+            } else {
+                match = false;
+            }
+
+            if (match) {
+                for (int j = 0; j < b.length(); j++) newStr += b.charAt(j);
                 i += a.length();
             } else {
-                s.append(str.charAt(i));
+                newStr += this.value.charAt(i);
                 i++;
             }
         }
-        str = s.toString();
-        return str;
+        this.value = newStr;
+        return this.value;
     }
 
     // Check palindrome
     public boolean isPalindrome() {
-        for (int i = 0, j = str.length() - 1; i < j; i++, j--) {
-            if (str.charAt(i) != str.charAt(j)) {
-                return false;
-            }
+        int i = 0, j = this.value.length() - 1;
+        while (i < j) {
+            if (this.value.charAt(i) != this.value.charAt(j)) return false;
+            i++;
+            j--;
         }
         return true;
     }
 
-    // Splice
-    public String splice(int start, int end) {
-        if (start >= 0 && end <= str.length() && start < end) {
-            return str.substring(start, end);
-        } else {
+    //Splice (remove substring of given length starting from start)
+    public String splice(int start, int length) {
+        if (start < 0 || start >= this.value.length() || length <= 0) {
             System.out.println("Invalid range!");
             return "";
         }
-    }
 
-    // Split
-    public ArrayList<String> split(char element) {
-    ArrayList<String> parts = new ArrayList<>();
-    StringBuilder cur = new StringBuilder();
+        if (start + length > this.value.length())
+            length = this.value.length() - start;
 
-    for (int i = 0; i < str.length(); i++) {
-        char ch = str.charAt(i);
-        if (ch == element) {
-            // jab split character mile to cur string add kar do
-            parts.add(cur.toString());
-            cur.setLength(0); // reset builder
-        } else {
-            cur.append(ch);
+        String removed = "";
+        String newStr = "";
+
+        for (int i = start; i < start + length; i++) {
+            removed += this.value.charAt(i);
         }
+
+        for (int i = 0; i < this.value.length(); i++) {
+            if (i < start || i >= start + length) {
+                newStr += this.value.charAt(i);
+            }
+        }
+
+        this.value = newStr;
+        return removed;
     }
 
-    // last part add karna mat bhool
-    parts.add(cur.toString());
+    // Split by a character
+    public String[] split(char element) {
+        int parts = 1;
+        for (int i = 0; i < this.value.length(); i++) {
+            if (this.value.charAt(i) == element)
+                parts++;
+        }
 
-    return parts;
-}
+        String[] result = new String[parts];
+        for (int i = 0; i < parts; i++) 
+            result[i] = "";
+
+        int idx = 0;
+        for (int i = 0; i < this.value.length(); i++) {
+            if (this.value.charAt(i) == element)
+                idx++;
+            else 
+                result[idx] += this.value.charAt(i);
+        }
+        return result;
+    }
 
     // Max repeating character
     public char maxRepeatingCharacter() {
         int[] freq = new int[256];
-        for (char ch : str.toCharArray()) freq[ch]++;
+        for (int i = 0; i < this.value.length(); i++) {
+            freq[this.value.charAt(i)]++;
+        }
+
         int max = 0;
         char maxCh = ' ';
         for (int i = 0; i < 256; i++) {
@@ -115,23 +152,24 @@ public class MyString {
         return maxCh;
     }
 
-    // Sort (converted to use char array)
+    // Sort the string using Quick Sort
     public String sort() {
-        char[] arr = str.toCharArray();
+        char[] arr = this.value.toCharArray();
         quickSort(arr, 0, arr.length - 1);
-        str = new String(arr);
-        System.out.println("Sorted string: " + str);
-        return str;
+        this.value = new String(arr);
+        return this.value;
     }
 
+    // Recursive quick sort
     private void quickSort(char[] arr, int low, int high) {
         if (low < high) {
-            int pi = partition(arr, low, high);
-            quickSort(arr, low, pi - 1);
-            quickSort(arr, pi + 1, high);
+            int pivotIndex = partition(arr, low, high);
+            quickSort(arr, low, pivotIndex - 1);
+            quickSort(arr, pivotIndex + 1, high);
         }
     }
 
+    // Partition logic for quick sort
     private int partition(char[] arr, int low, int high) {
         char pivot = arr[high];
         int i = low - 1;
@@ -149,26 +187,35 @@ public class MyString {
         return i + 1;
     }
 
-    // Shift string characters by n
+
+
+    // Shift by n characters
     public String shift(int n) {
-        if (str.length() <= 1) return str;
-        n = n % str.length();
-        if (n <= 0) return str;
+        int len = this.value.length();
+        if (len <= 1) return this.value;
+        n = n % len;
+        if (n <= 0) return this.value;
 
-        str = str.substring(n) + str.substring(0, n);
-        return str;
+        String shifted = "";
+        for (int i = n; i < len; i++) shifted += this.value.charAt(i);
+        for (int i = 0; i < n; i++) shifted += this.value.charAt(i);
+
+        this.value = shifted;
+        return this.value;
     }
 
-    // Reverse string
+    // Reverse
     public String reverse() {
-        StringBuilder sb = new StringBuilder(str);
-        sb.reverse();
-        str = sb.toString();
-        return str;
+        String rev = "";
+        for (int i = this.value.length() - 1; i >= 0; i--) {
+            rev += this.value.charAt(i);
+        }
+        this.value = rev;
+        return this.value;
     }
 
-    // Get string
+    // Get current string
     public String getString() {
-        return this.str;
+        return this.value;
     }
 }
