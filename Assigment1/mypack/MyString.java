@@ -1,28 +1,36 @@
 package mypack;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * @filename - MyString.java
+ * @description - A custom string class with various string manipulation methods.
+ * @author - Aman Jeet Singh
+ */
 public class MyString {
-    private char[] c;
+    private String str;
 
     public MyString(String input) {
-        c = input.toCharArray();
+        str = input;
+    }
+
+    @Override
+    public String toString() {
+        return this.str;
     }
 
     // Append
-    public void append(String newStr) {
-        char[] newC = new char[c.length + newStr.length()];
-        for (int i = 0; i < c.length; i++) newC[i] = c[i];
-        for (int i = 0; i < newStr.length(); i++) newC[c.length + i] = newStr.charAt(i);
-        c = newC;
-        System.out.println("After append: " + new String(c));
+    public String append(String newStr) {
+        this.str += newStr;
+        return this.str;
     }
 
     // Count words
-    public void countWords() {
+    public int countWords() {
         int words = 0;
         boolean inWord = false;
-        for (char ch : c) {
+        for (char ch : str.toCharArray()) {
             if (ch != ' ' && ch != '\t') {
                 if (!inWord) {
                     words++;
@@ -30,55 +38,72 @@ public class MyString {
                 }
             } else inWord = false;
         }
-        System.out.println("Word count: " + words);
+        return words;
     }
 
-    // Replace character
-    public void replace(char oldC, char newC) {
-        for (int i = 0; i < c.length; i++) {
-            if (c[i] == oldC) c[i] = newC;
+    // Replace substring (your custom logic retained but fixed)
+    public String replace(String a, String b) {
+        StringBuilder s = new StringBuilder();
+        int i = 0;
+        while (i < str.length()) {
+            if (i + a.length() <= str.length() && str.substring(i, i + a.length()).equals(a)) {
+                s.append(b);
+                i += a.length();
+            } else {
+                s.append(str.charAt(i));
+                i++;
+            }
         }
-        System.out.println("After replace: " + new String(c));
+        str = s.toString();
+        return str;
     }
 
     // Check palindrome
-    public void isPalindrome() {
-        boolean palin = true;
-        for (int i = 0, j = c.length - 1; i < j; i++, j--) {
-            if (Character.toLowerCase(c[i]) != Character.toLowerCase(c[j])) {
-                palin = false;
-                break;
+    public boolean isPalindrome() {
+        for (int i = 0, j = str.length() - 1; i < j; i++, j--) {
+            if (str.charAt(i) != str.charAt(j)) {
+                return false;
             }
         }
-        System.out.println(palin ? "Palindrome!" : "Not a palindrome.");
+        return true;
     }
 
     // Splice
-    public void splice(int start, int end) {
-        if (start >= 0 && end <= c.length && start < end) {
-            char[] sub = new char[end - start];
-            for (int i = start; i < end; i++) sub[i - start] = c[i];
-            System.out.println("Spliced string: " + new String(sub));
-        } else System.out.println("Invalid range!");
+    public String splice(int start, int end) {
+        if (start >= 0 && end <= str.length() && start < end) {
+            return str.substring(start, end);
+        } else {
+            System.out.println("Invalid range!");
+            return "";
+        }
     }
 
     // Split
-    public void split(char element) {
-    System.out.println("Split result by '" + element + "':");
-    int start = 0;
-    for (int i = 0; i <= c.length; i++) {
-        if (i == c.length || c[i] == element) {
-            for (int j = start; j < i; j++) System.out.print(c[j]);
-            System.out.println();
-            start = i + 1;
+    public ArrayList<String> split(char element) {
+    ArrayList<String> parts = new ArrayList<>();
+    StringBuilder cur = new StringBuilder();
+
+    for (int i = 0; i < str.length(); i++) {
+        char ch = str.charAt(i);
+        if (ch == element) {
+            // jab split character mile to cur string add kar do
+            parts.add(cur.toString());
+            cur.setLength(0); // reset builder
+        } else {
+            cur.append(ch);
         }
     }
-    }
+
+    // last part add karna mat bhool
+    parts.add(cur.toString());
+
+    return parts;
+}
 
     // Max repeating character
-    public void maxRepeatingCharacter() {
+    public char maxRepeatingCharacter() {
         int[] freq = new int[256];
-        for (char ch : c) freq[ch]++;
+        for (char ch : str.toCharArray()) freq[ch]++;
         int max = 0;
         char maxCh = ' ';
         for (int i = 0; i < 256; i++) {
@@ -87,68 +112,63 @@ public class MyString {
                 maxCh = (char) i;
             }
         }
-        System.out.println("Max repeating character: " + maxCh + " (" + max + " times)");
+        return maxCh;
     }
 
-    // Sort
-    public void sort() {
-    quickSort(0, c.length - 1);
-    System.out.println("Sorted string: " + new String(c));
+    // Sort (converted to use char array)
+    public String sort() {
+        char[] arr = str.toCharArray();
+        quickSort(arr, 0, arr.length - 1);
+        str = new String(arr);
+        System.out.println("Sorted string: " + str);
+        return str;
     }
 
-    private void quickSort(int low, int high) {
-    if (low < high) {
-        int pi = partition(low, high);
-        quickSort(low, pi - 1);
-        quickSort(pi + 1, high);
-    }
-    }
-
-    private int partition(int low, int high) {
-    char pivot = c[high];
-    int i = low - 1;
-    for (int j = low; j < high; j++) {
-        if (c[j] <= pivot) {
-            i++;
-            char temp = c[i];
-            c[i] = c[j];
-            c[j] = temp;
+    private void quickSort(char[] arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
         }
     }
-    char temp = c[i + 1];
-    c[i + 1] = c[high];
-    c[high] = temp;
-    return i + 1;
-    }
 
-    // Shift
-    public void shift(int n) {
-        if (c.length <= 1) return;
-
-        n = n % c.length;
-        if (n <= 0) return;
-
-        char[] temp = new char[c.length];
-        for (int i = n; i < c.length; i++) temp[i - n] = c[i];
-        for (int i = 0; i < n; i++) temp[c.length - n + i] = c[i];
-        c = temp;
-        System.out.println("After shift: " + new String(c));
-    }
-
-    // Reverse
-    public void reverse() {
-        int j=c.length-1;
-        for (int i=0;i<j;i++) {
-            char temp = c[i];
-            c[i] = c[j];
-            c[j] = temp;
-            j--;
+    private int partition(char[] arr, int low, int high) {
+        char pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                char temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
         }
-        System.out.println("Reversed string: " + new String(c));
+        char temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        return i + 1;
+    }
+
+    // Shift string characters by n
+    public String shift(int n) {
+        if (str.length() <= 1) return str;
+        n = n % str.length();
+        if (n <= 0) return str;
+
+        str = str.substring(n) + str.substring(0, n);
+        return str;
+    }
+
+    // Reverse string
+    public String reverse() {
+        StringBuilder sb = new StringBuilder(str);
+        sb.reverse();
+        str = sb.toString();
+        return str;
     }
 
     // Get string
     public String getString() {
-        return new String(c);
+        return this.str;
     }
 }
