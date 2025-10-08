@@ -3,9 +3,9 @@ import mypack.MyString;
 import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        Scanner InputScanner = new Scanner(System.in);
         System.out.print("Enter a string: ");
-        String input = sc.nextLine();
+        String input = InputScanner.nextLine();
 
         MyString myStr = new MyString(input);
 
@@ -24,13 +24,13 @@ public class Main {
             System.out.println("10. Reverse");
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
-            choice = sc.nextInt();
-            sc.nextLine(); 
+            choice = InputScanner.nextInt();
+            InputScanner.nextLine(); 
             String ans;
             switch (choice) {
                 case 1:
                     System.out.print("Enter string to append: ");
-                    String appendStr = sc.nextLine();
+                    String appendStr = InputScanner.nextLine();
                     ans=myStr.append(appendStr);
                     System.out.println("After append: " + ans);
                     break;
@@ -40,9 +40,9 @@ public class Main {
                     break;
                 case 3:
                     System.out.print("Enter old String: ");
-                    String oldC = sc.next();
+                    String oldC = InputScanner.next();
                     System.out.print("Enter new String: ");
-                    String newC = sc.next();
+                    String newC = InputScanner.next();
                     ans=myStr.replace(oldC, newC);
                     System.out.println("After replace: " + ans);
                     break;
@@ -52,24 +52,27 @@ public class Main {
                     break;
                 case 5:
                     System.out.print("Enter start index: ");
-                    int start = sc.nextInt();
-                    System.out.print("Enter end index: ");
-                    int end = sc.nextInt();
-                    ans=myStr.splice(start, end);
-                    System.out.println("Spliced string: " + ans);
+                    int start = InputScanner.nextInt();
+                    System.out.print("Enter length to remove: ");
+                    int length = InputScanner.nextInt();
+                    InputScanner.nextLine(); // consume newline
+                    ans = myStr.splice(start, length);
+                    System.out.println("Removed part: " + ans);
+                    System.out.println("Remaining string: " + myStr.getString());
                     break;
                 case 6:
                     System.out.print("Enter character to split by: ");
-                    String delimInput = sc.nextLine();
+                    String delimInput = InputScanner.nextLine();
                     char delim = delimInput.isEmpty() ? ' ' : delimInput.charAt(0);
-                    ArrayList<String> arr = myStr.split(delim);
-                    for(int i=0;i<arr.size();i++){
-                        System.out.println(arr.get(i));
+                    String[] parts = myStr.split(delim);
+                    System.out.println("Split parts:");
+                    for (String part : parts) {
+                        System.out.println(part);
                     }
                     break;
                 case 7:
-                    int no=myStr.maxRepeatingCharacter();
-                    System.out.println("Max repeating character: " + (char)no);
+                    char maxChar = myStr.maxRepeatingCharacter();
+                    System.out.println("Max repeating character: " + maxChar);
                     break;
                 case 8:
                     ans=myStr.sort();
@@ -77,7 +80,7 @@ public class Main {
                     break;
                 case 9:
                     System.out.print("Enter number of characters to shift: ");
-                    int n = sc.nextInt();
+                    int n = InputScanner.nextInt();
                     ans=myStr.shift(n);
                     System.out.println("After shift: " + ans);
                     break;
